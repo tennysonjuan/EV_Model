@@ -1,0 +1,39 @@
+from itertools import combinations
+from math import comb
+
+def calculate_parlay_ev(hit_rate, parlay_size):
+    # Calculate the expected value for a single parlay at even odds.
+    return (2 ** parlay_size) * (hit_rate ** parlay_size) - 1
+
+def calculate_round_robin_ev(hit_rate, total_bets, parlay_size):
+    # Calculate the number of possible parlays of a certain size and their expected value.
+    num_parlays = comb(total_bets, parlay_size)
+    single_parlay_ev = calculate_parlay_ev(hit_rate, parlay_size)
+    return num_parlays * single_parlay_ev
+
+def best_round_robin_strategy(hit_rate, total_bets):
+    best_ev = None
+    best_size = 0
+    best_num_parlays = 0
+
+    # Check for all possible parlay sizes
+    for parlay_size in range(2, total_bets + 1):
+        round_robin_ev = calculate_round_robin_ev(hit_rate, total_bets, parlay_size)
+        num_parlays = comb(total_bets, parlay_size)
+
+        if best_ev is None or round_robin_ev > best_ev:
+            best_ev = round_robin_ev
+            best_size = parlay_size
+            best_num_parlays = num_parlays
+
+    return best_size, best_ev, best_num_parlays
+
+
+hit_rate = float(input("Enter your hit rate (as a decimal): "))
+total_bets = int(input("Enter the total number of bets you want to make: "))
+
+
+
+best_size, best_ev, best_num_parlays = best_round_robin_strategy(hit_rate, total_bets)
+print(f"Hit Rate: {hit_rate*100}%, Parlay Size: {best_size} EV: {best_ev:.2f}.")
+print(f"Number of Parlays: {best_num_parlays}")
